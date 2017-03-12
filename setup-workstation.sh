@@ -1,4 +1,5 @@
 #!/bin/bash
+source set_env.sh
 domain_name=$(hostname -f|cut -d '.' -f 2-8)
 cat /dev/zero | ssh-keygen -q -N ""
 sudo subscription-manager register --username $sub_man --password $sub_man_pswd
