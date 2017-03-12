@@ -1,0 +1,2 @@
+DEVS={{block_device.stdout}}
+VG=docker-vg

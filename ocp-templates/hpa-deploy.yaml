@@ -1,0 +1,421 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: hpa-deploy
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: test-app
+    name: test-app
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: test-app:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/openshift/nodejs-ex.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:4
+          namespace: openshift
+      type: Source
+    triggers:
+    - generic:
+        secret: fd570ae34a323e53
+      type: Generic
+    - github:
+        secret: 58e09651a7525c7c
+      type: GitHub
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: Build
+  metadata:
+    annotations:
+      openshift.io/build-config.name: test-app
+      openshift.io/build.number: "1"
+      openshift.io/build.pod-name: test-app-1-build
+    creationTimestamp: null
+    labels:
+      app: test-app
+      buildconfig: test-app
+      openshift.io/build-config.name: test-app
+      openshift.io/build.start-policy: Serial
+    name: test-app-1
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: builder-dockercfg-14e5n
+      to:
+        kind: ImageStreamTag
+        name: test-app:latest
+    postCommit: {}
+    resources: {}
+    revision:
+      git:
+        author:
+          email: bparees@users.noreply.github.com
+          name: Ben Parees
+        commit: e81cacfa03b026dd9860de2d2774df6e6d421250
+        committer:
+          email: noreply@github.com
+          name: GitHub
+        message: 'Merge pull request #95 from bparees/sc_metadata'
+      type: Git
+    serviceAccount: builder
+    source:
+      git:
+        ref: master
+        uri: https://github.com/openshift/nodejs-ex.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: DockerImage
+          name: registry.access.redhat.com/rhscl/nodejs-4-rhel7@sha256:a7d1f9c3058c197a97eaca339dcbbba4596429df0fb1bcd1578a9ed6f523b2ee
+      type: Source
+    triggeredBy:
+    - message: Build configuration change
+  status:
+    config:
+      name: test-app
+    phase: New
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: test-app
+    name: test-app
+  spec:
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: 172.30.0.25:5000/hpa/test-app:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: test-app
+    name: test-app
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: test-app
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: test-app
+          deploymentconfig: test-app
+      spec:
+        containers:
+        - image: 172.30.0.25:5000/hpa/test-app@sha256:e0056261b6b5ebbc8f8ac99e131048a9c7f42c6f3d25838ac6b58fa4ddb5e7d7
+          imagePullPolicy: Always
+          name: test-app
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 400m
+            requests:
+              cpu: 200m
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - test-app
+        from:
+          kind: ImageStreamTag
+          name: test-app:latest
+          namespace: hpa
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.name: test-app-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: test-app
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"test-app","namespace":"hpa","selfLink":"/oapi/v1/namespaces/hpa/deploymentconfigs/test-app","uid":"9b883f95-020c-11e7-a5cb-000d3ab620cf","resourceVersion":"3213","generation":2,"creationTimestamp":"2017-03-06T01:31:23Z","labels":{"app":"test-app"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{}},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["test-app"],"from":{"kind":"ImageStreamTag","namespace":"hpa","name":"test-app:latest"},"lastTriggeredImage":"172.30.0.25:5000/hpa/test-app@sha256:e0056261b6b5ebbc8f8ac99e131048a9c7f42c6f3d25838ac6b58fa4ddb5e7d7"}},{"type":"ConfigChange"}],"replicas":1,"test":false,"selector":{"deploymentconfig":"test-app"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"test-app","deploymentconfig":"test-app"}},"spec":{"containers":[{"name":"test-app","image":"172.30.0.25:5000/hpa/test-app@sha256:e0056261b6b5ebbc8f8ac99e131048a9c7f42c6f3d25838ac6b58fa4ddb5e7d7","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{"limits":{"cpu":"400m"},"requests":{"cpu":"200m"}},"terminationMessagePath":"/dev/termination-log","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{}}}},"status":{"latestVersion":1,"observedGeneration":1,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"ImageStreamTag","namespace":"hpa","name":"test-app:latest"}}}]},"conditions":[{"type":"Available","status":"False","lastTransitionTime":"2017-03-06T01:31:23Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: test-app
+      openshift.io/deployment-config.name: test-app
+    name: test-app-1
+  spec:
+    replicas: 1
+    selector:
+      deployment: test-app-1
+      deploymentconfig: test-app
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: test-app
+          openshift.io/deployment.name: test-app-1
+        creationTimestamp: null
+        labels:
+          app: test-app
+          deployment: test-app-1
+          deploymentconfig: test-app
+      spec:
+        containers:
+        - image: 172.30.0.25:5000/hpa/test-app@sha256:e0056261b6b5ebbc8f8ac99e131048a9c7f42c6f3d25838ac6b58fa4ddb5e7d7
+          imagePullPolicy: Always
+          name: test-app
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 400m
+            requests:
+              cpu: 200m
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: test-app
+    name: test-app
+  spec:
+    host: test-app-hpa.collectalot.org
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: test-app
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2017-03-06T01:31:23Z
+        status: "True"
+        type: Admitted
+      host: test-app-hpa.collectalot.org
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: test-app
+    name: test-app
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: test-app
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/build.name: test-app-1
+      openshift.io/scc: privileged
+    creationTimestamp: null
+    labels:
+      openshift.io/build.name: test-app-1
+    name: test-app-1-build
+  spec:
+    containers:
+    - args:
+      - --loglevel=0
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"test-app-1","namespace":"hpa","selfLink":"/oapi/v1/namespaces/hpa/builds/test-app-1","uid":"9b89d7ba-020c-11e7-a5cb-000d3ab620cf","resourceVersion":"3184","creationTimestamp":"2017-03-06T01:31:23Z","labels":{"app":"test-app","buildconfig":"test-app","openshift.io/build-config.name":"test-app","openshift.io/build.start-policy":"Serial"},"annotations":{"openshift.io/build-config.name":"test-app","openshift.io/build.number":"1"}},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/openshift/nodejs-ex.git","ref":"master"}},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/nodejs-4-rhel7@sha256:a7d1f9c3058c197a97eaca339dcbbba4596429df0fb1bcd1578a9ed6f523b2ee"}}},"output":{"to":{"kind":"DockerImage","name":"172.30.0.25:5000/hpa/test-app:latest"},"pushSecret":{"name":"builder-dockercfg-14e5n"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Build configuration change"}]},"status":{"phase":"New","outputDockerImageReference":"172.30.0.25:5000/hpa/test-app:latest","config":{"kind":"BuildConfig","namespace":"hpa","name":"test-app"}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/openshift/nodejs-ex.git
+      - name: SOURCE_URI
+        value: https://github.com/openshift/nodejs-ex.git
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.4.1.7
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID,SYS_CHROOT
+      - name: PUSH_DOCKERCFG_PATH
+        value: /var/run/secrets/openshift.io/push
+      image: openshift3/ose-sti-builder:v3.4.1.7
+      imagePullPolicy: IfNotPresent
+      name: sti-build
+      resources: {}
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      volumeMounts:
+      - mountPath: /var/run/docker.sock
+        name: docker-socket
+      - mountPath: /var/run/secrets/openshift.io/push
+        name: builder-dockercfg-14e5n-push
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-pcztk
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: builder-dockercfg-14e5n
+    nodeName: master1.tdqcvioqd12ublntczh0psfdag.fx.internal.cloudapp.net
+    restartPolicy: Never
+    securityContext: {}
+    serviceAccount: builder
+    serviceAccountName: builder
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - hostPath:
+        path: /var/run/docker.sock
+      name: docker-socket
+    - name: builder-dockercfg-14e5n-push
+      secret:
+        defaultMode: 420
+        secretName: builder-dockercfg-14e5n
+    - name: builder-token-pcztk
+      secret:
+        defaultMode: 420
+        secretName: builder-token-pcztk
+  status:
+    phase: Pending
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"ReplicationController","namespace":"hpa","name":"test-app-1","uid":"ab9b628e-020c-11e7-a5cb-000d3ab620cf","apiVersion":"v1","resourceVersion":"3232"}}
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: test-app
+      openshift.io/deployment.name: test-app-1
+      openshift.io/scc: restricted
+    creationTimestamp: null
+    generateName: test-app-1-
+    labels:
+      app: test-app
+      deployment: test-app-1
+      deploymentconfig: test-app
+  spec:
+    containers:
+    - image: 172.30.0.25:5000/hpa/test-app@sha256:e0056261b6b5ebbc8f8ac99e131048a9c7f42c6f3d25838ac6b58fa4ddb5e7d7
+      imagePullPolicy: Always
+      name: test-app
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      resources:
+        limits:
+          cpu: 400m
+        requests:
+          cpu: 200m
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+          - SYS_CHROOT
+        privileged: false
+        runAsUser: 1000120000
+        seLinuxOptions:
+          level: s0:c11,c5
+      terminationMessagePath: /dev/termination-log
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-iyav7
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-6f5vk
+    nodeName: master1.tdqcvioqd12ublntczh0psfdag.fx.internal.cloudapp.net
+    restartPolicy: Always
+    securityContext:
+      fsGroup: 1000120000
+      seLinuxOptions:
+        level: s0:c11,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - name: default-token-iyav7
+      secret:
+        defaultMode: 420
+        secretName: default-token-iyav7
+  status:
+    phase: Pending

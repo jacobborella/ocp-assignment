@@ -1,0 +1,189 @@
+---
+- hosts: masters, nodes
+  vars:
+    subscription_manager_user: jborella@redhat.com
+    subscription_manager_pswd: setit
+    subscription_manager_ocp_sub_id: 8a85f9833e1404a9013e3cddf95a0599
+  remote_user: jborella
+  become_user: root
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Check if subscription has been setup
+    stat:
+      path: /etc/ocp-installer/subscription-created.guard
+    register: subscription_created
+  - name: Check if OCP subscription has attached
+    stat:
+      path: /etc/ocp-installer/subscription-attached.guard
+    register: subscription_attached
+  - name: Check if OCP rhsm repos has been disabled
+    stat:
+      path: /etc/ocp-installer/rhsm_repo_disabled.guard
+    register: rhsm_disabled
+  - name: Check if yum repos has been disabled
+    stat:
+      path: /etc/ocp-installer/yum_repo_disabled.guard
+    register: yum_disabled
+  - name: Check if relevant repos has been enabled
+    stat:
+      path: /etc/ocp-installer/repo_enabled.guard
+    register: repo_enabled
+  - name: Create directory to hold settings
+    file: path=/etc/ocp-installer/ state=directory
+  - name: Subscribe server to Red Hat with subscription-manager
+    command: subscription-manager register --username={{subscription_manager_user}} --password={{subscription_manager_pswd}}
+    when: not subscription_created.stat.exists
+    register: subscribed
+  - name: mark registration as done if subscription was successfull
+    file:
+      path: /etc/ocp-installer/subscription-created.guard
+      state: touch
+    when: subscribed.rc is defined and subscribed.rc == 0
+  - name: Attach subscription for OCP
+    command: subscription-manager attach --pool={{subscription_manager_ocp_sub_id}}
+    when: not subscription_attached.stat.exists
+    register: attached
+  - name: mark registration as done if attachment was successfull
+    file:
+      path: /etc/ocp-installer/subscription-attached.guard
+      state: touch
+    when: attached.rc is defined and attached.rc == 0
+  - name: Disable all enabled RHSM repos
+    command: subscription-manager repos --disable="*"
+    when: not rhsm_disabled.stat.exists
+    register: rhsm_wr_disabled
+  - name: mark rhsm disablement as done
+    file:
+      path: /etc/ocp-installer/rhsm_repo_disabled.guard
+      state: touch
+    when: rhsm_wr_disabled.rc is defined and rhsm_wr_disabled.rc == 0
+  - name: Disable all yum repos
+    command: yum-config-manager --disable \*
+    when: not yum_disabled.stat.exists
+    register: yum_wr_disabled
+  - name: mark yum disablement as done
+    file:
+      path: /etc/ocp-installer/yum_repo_disabled.guard
+      state: touch
+    when: yum_wr_disabled.rc is defined and yum_wr_disabled.rc == 0
+  - name: Enable relevant repos
+    command: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.4-rpms"
+    when: not repo_enabled.stat.exists
+    register: repo_wr_enabled
+  - name: mark repo enablement as done
+    file:
+      path: /etc/ocp-installer/repo_enabled.guard
+      state: touch
+    when: repo_wr_enabled.rc is defined and repo_wr_enabled.rc == 0
+  - name: Install wget
+    yum:
+      name: wget
+      state: latest
+  - name: Install git
+    yum:
+      name: git
+      state: latest
+  - name: Install net-tools
+    yum:
+      name: net-tools
+      state: latest
+  - name: Install bind-utils
+    yum:
+      name: bind-utils
+      state: latest
+  - name: Install iptables-services
+    yum:
+      name: iptables-services
+      state: latest
+  - name: Install bridge-utils
+    yum:
+      name: bridge-utils
+      state: latest
+  - name: Install bash-completion
+    yum:
+      name: bash-completion
+      state: latest
+  - name: upgrade all packages
+    yum: name=* state=latest
+  - name: Install atomic-openshift-utils
+    yum:
+      name: atomic-openshift-utils
+      state: latest
+  - name: Install atomic-openshift-excluder
+    yum:
+      name: atomic-openshift-excluder
+      state: latest
+  - name: Install atomic-openshift-docker-excluder
+    yum:
+      name: atomic-openshift-docker-excluder
+      state: latest
+  - name: For the duration of the installation enable atomic-openshift
+    command: atomic-openshift-excluder unexclude
+  - name: Install docker
+    yum:
+      name: docker
+      state: latest
+#before enabling docker, ensure proper allocation of disk for docker image
+  - name: Find name of block device to use (thx to Magnus for script:-)
+    shell: "parted -m /dev/sda print all 2>/dev/null | grep unknown | grep /dev/sd | cut -d':' -f1"
+    register: block_device
+  - name: Setup docker-storage-setup file
+    template:
+      src: templates/docker-storage-setup
+      dest: /etc/sysconfig/docker-storage-setup
+  - name: Run docker-storage-setup
+    shell: docker-storage-setup
+  - name: Ensure docker is started
+    systemd:
+      name: docker
+      state: started
+      enabled: True
+- hosts: nfs
+  remote_user: jborella
+  become_user: root
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Install nfs-utils
+    yum:
+      name: nfs-utils
+      state: latest
+  - name: Install nfs-utils-lib
+    yum:
+      name: nfs-utils-lib
+      state: latest
+  - name: Create nfsshare
+    file:
+      path: /nfsshare
+      state: directory
+      mode: 0777
+  - name: Create dir for Jenkins file system
+    file:
+      path: /nfsshare/jenkins
+      state: directory
+      mode: 0777
+  - name: Create pv0001
+    file:
+      path: /nfsshare/pv0001
+      state: directory
+      mode: 0777
+  - name: Create pv0002
+    file:
+      path: /nfsshare/pv0002
+      state: directory
+      mode: 0777
+  - name: Create pv0003
+    file:
+      path: /nfsshare/pv0003
+      state: directory
+      mode: 0777
+  - name: Setup nfs storage
+    template:
+      src: templates/exports
+      dest: /etc/exports
+  - name: Ensure nfs server is started
+    systemd:
+      name: nfs
+      state: started
+      enabled: true

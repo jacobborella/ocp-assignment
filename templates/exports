@@ -1,0 +1,5 @@
+/nfsshare/jenkins *(rw,sync,no_root_squash)
+/nfsshare/pv0001 *(rw,sync,no_root_squash)
+/nfsshare/pv0002 *(rw,sync,no_root_squash)
+/nfsshare/pv0003 *(rw,sync,no_root_squash)
+

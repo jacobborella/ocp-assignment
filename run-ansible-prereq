@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ansible-playbook -i hosts ensure_prereq.yml -f 10 --extra-vars "subscription_manager_pswd=${sub_man_pswd}
