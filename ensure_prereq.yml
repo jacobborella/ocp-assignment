@@ -1,9 +1,9 @@
 ---
 - hosts: masters, nodes
   vars:
-    subscription_manager_user: jborella@redhat.com
+    subscription_manager_user: setit
     subscription_manager_pswd: setit
-    subscription_manager_ocp_sub_id: 8a85f9833e1404a9013e3cddf95a0599
+    subscription_manager_ocp_sub_id: setit
   remote_user: jborella
   become_user: root
   become: yes
