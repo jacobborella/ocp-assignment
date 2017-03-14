@@ -1,0 +1,78 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+nfs
+etcd
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=jborella
+openshift_use_dnsmasq=false
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=ocp-master.northeurope.cloudapp.azure.com
+openshift_master_cluster_public_hostname=ocp-master.northeurope.cloudapp.azure.com
+
+openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvider'}]
+
+# If ansible_ssh_user is not root, ansible_become must be set to true
+ansible_become=true
+
+deployment_type=openshift-enterprise
+
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+#openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
+openshift_master_default_subdomain=collectalot.org
+
+# openshift-ansible will wait indefinitely for your input when it detects that the
+# value of openshift_hostname resolves to an IP address not bound to any local
+# interfaces. This mis-configuration is problematic for any pod leveraging host
+# networking and liveness or readiness probes.
+# Setting this variable to true will override that check.
+#openshift_override_hostname_check=true
+
+
+# Configure persistent storage via nfs server on master
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_host=master1
+openshift_hosted_registry_storage_nfs_directory=/exports
+openshift_hosted_registry_storage_volume_name=registry
+openshift_hosted_registry_storage_volume_size=5Gi
+
+# Setup metrics
+openshift_hosted_metrics_deploy=true
+openshift_hosted_metrics_storage_kind=nfs
+openshift_hosted_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_hosted_metrics_storage_host=master1
+openshift_hosted_metrics_storage_nfs_directory=/exports
+openshift_hosted_metrics_storage_volume_name=metrics
+openshift_hosted_metrics_storage_volume_size=10Gi
+#openshift_hosted_metrics_public_url=https://metrics.collectalot.org/hawkular/metrics
+
+# Setup logging
+openshift_hosted_logging_deploy=true
+openshift_hosted_logging_storage_kind=nfs
+openshift_hosted_logging_storage_access_modes=['ReadWriteOnce']
+openshift_hosted_logging_storage_host=master1
+openshift_hosted_logging_storage_nfs_directory=/exports
+openshift_hosted_logging_storage_volume_name=logging
+openshift_hosted_logging_storage_volume_size=10Gi
+#openshift_master_logging_public_url=https://kibana.collectalot.org
+
+# host group for masters
+[masters]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+
+[etcd]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+
+[nfs]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+
+[nodes]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=true
+
