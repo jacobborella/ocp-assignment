@@ -38,4 +38,4 @@ sed -i -e "s/dud11glxmi2edm0cgnwmaovwqf/$domain_name/g" ansible-host-file/hosts
 
 sudo cp ansible-host-file/hosts /etc/ansible/
 
-ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml -f 10
+#ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml -f 10
