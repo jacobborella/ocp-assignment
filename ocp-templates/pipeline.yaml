@@ -38,7 +38,7 @@ spec:
            sh "cp target/openshift-tasks.war oc-build/deployments/ROOT.war"
            // clean up. keep the image stream
            sh "oc project test"
-           sh "oc delete bc,dc,svc,route -l app=tasks -n test"
+           sh "oc delete bc,dc,svc,route,is -l app=tasks -n test"
            // create build. override the exit code since it complains about exising imagestream
            sh "oc new-build --name=tasks --image-stream=jboss-eap70-openshift --binary=true --labels=app=tasks -n test || true"
            // build image
@@ -53,7 +53,7 @@ spec:
            // tag for prod
            sh "oc tag test/tasks:latest prod/tasks:${v}"
            // clean up. keep the imagestream
-           sh "oc delete bc,dc,svc,route -l app=tasks -n prod"
+           sh "oc delete bc,dc,svc,route,is -l app=tasks -n prod"
            // deploy prod image
            sh "oc new-app tasks:${v} -n prod"
            sh "oc expose svc/tasks -n prod"
