@@ -1,3 +1,3 @@
 #!/bin/bash
-
-ansible-playbook -i hosts ensure_prereq.yml -f 10 --extra-vars "subscription_manager_pswd=${sub_man_pswd} subscription_manager_user=${sub_man} subscription_manager_ocp_sub_id=${pool_id}"
+source set_env.sh
+ansible-playbook -i hosts ensure_prereq.yml -f 10 --extra-vars "subscription_manager_pswd=$sub_man_pswd subscription_manager_user=$sub_man subscription_manager_ocp_sub_id=$pool_id"

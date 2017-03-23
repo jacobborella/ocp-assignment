@@ -34,8 +34,7 @@ ssh-copy-id -o StrictHostKeyChecking=no app1
 ssh app1 "echo 'aMc5re1weaPkg'|sudo -S sed -i -e '$ a\jborella\tALL=(ALL)\tNOPASSWD: ALL' /etc/sudoers"
 ssh -o StrictHostKeyChecking=no app1.$domain_name "whoami"
 
-sed -i -e "s/dud11glxmi2edm0cgnwmaovwqf/$domain_name/g" ansible-host-file/hosts
+sed -i -e "s/dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net/$domain_name/g" ansible-host-file/hosts
 
 sudo cp ansible-host-file/hosts /etc/ansible/
 
-ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml -f 10

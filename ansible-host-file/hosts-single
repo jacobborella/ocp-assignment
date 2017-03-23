@@ -1,0 +1,32 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+nodes
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=jborella
+openshift_use_dnsmasq=false
+
+openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvi
+der'}]
+
+# If ansible_ssh_user is not root, ansible_become must be set to true
+ansible_become=true
+
+deployment_type=openshift-enterprise
+
+#openshift_master_cluster_hostname=master1.northeurope.cloudapp.azure.com
+openshift_master_cluster_public_hostname=master1.northeurope.cloudapp.azure.com
+
+openshift_master_default_subdomain=collectalot.org
+
+[masters]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+
+# host group for nodes, includes region info
+[nodes]
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'infra', 'zone': 'default'}" openshift_schedul
+able=true
+

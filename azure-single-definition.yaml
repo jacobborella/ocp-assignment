@@ -1,0 +1,524 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_master1_name": {
+            "defaultValue": "master1",
+            "type": "String"
+        },
+        "virtualMachines_workstation_name": {
+            "defaultValue": "workstation",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_name": {
+            "defaultValue": "master.lb",
+            "type": "String"
+        },
+        "networkInterfaces_master1728_name": {
+            "defaultValue": "master1728",
+            "type": "String"
+        },
+        "networkInterfaces_workstation270_name": {
+            "defaultValue": "workstation270",
+            "type": "String"
+        },
+        "networkSecurityGroups_master1_nsg_name": {
+            "defaultValue": "master1-nsg",
+            "type": "String"
+        },
+        "networkSecurityGroups_workstation_nsg_name": {
+            "defaultValue": "workstation-nsg",
+            "type": "String"
+        },
+        "publicIPAddresses_master_lb_ip_name": {
+            "defaultValue": "master-lb-ip",
+            "type": "String"
+        },
+        "publicIPAddresses_master1_ip_name": {
+            "defaultValue": "master1-ip",
+            "type": "String"
+        },
+        "publicIPAddresses_workstation_ip_name": {
+            "defaultValue": "workstation-ip",
+            "type": "String"
+        },
+        "virtualNetworks_OCP_vnet_name": {
+            "defaultValue": "OCP-vnet",
+            "type": "String"
+        },
+        "storageAccounts_ocpdisks641_name": {
+            "defaultValue": "ocpdisks641",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/frontendIPConfigurations/LoadBalancerFrontEnd",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id_1": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/backendAddressPools/master-backend-pool",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id_2": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/probes/http-probe",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id_3": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/frontendIPConfigurations/LoadBalancerFrontEnd",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id_4": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/backendAddressPools/master-backend-pool",
+            "type": "String"
+        },
+        "loadBalancers_master.lb_id_5": {
+            "defaultValue": "/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb/probes/http-probe",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Compute/virtualMachines/master1'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_master1_name')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "northeurope",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "RedHat",
+                        "offer": "RHEL",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[parameters('virtualMachines_master1_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_ocpdisks641_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_master1_name'),'20170320002538.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "name": "[concat(parameters('virtualMachines_master1_name'),'-20170320-005120')]",
+                            "createOption": "Empty",
+                            "vhd": {
+                                "uri": "[concat('https', '://', parameters('storageAccounts_ocpdisks641_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_master1_name'),'-20170320-005120.vhd'))]"
+                            },
+                            "caching": "ReadOnly",
+                            "diskSizeGB": 60
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_master1_name')]",
+                    "adminUsername": "jborella",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_master1728_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_ocpdisks641_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_master1728_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Compute/virtualMachines/workstation'.",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachines_workstation_name')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "northeurope",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS2_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "RedHat",
+                        "offer": "RHEL",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[parameters('virtualMachines_workstation_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', parameters('storageAccounts_ocpdisks641_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_workstation_name'),'20170319233417.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_workstation_name')]",
+                    "adminUsername": "jborella",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false
+                    },
+                    "secrets": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_workstation270_name'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_ocpdisks641_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_workstation270_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/loadBalancers/master.lb'.",
+            "type": "Microsoft.Network/loadBalancers",
+            "name": "[parameters('loadBalancers_master.lb_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_master_lb_ip_name'))]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "master-backend-pool"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "http-rule",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('loadBalancers_master.lb_id')]"
+                            },
+                            "frontendPort": 80,
+                            "backendPort": 80,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "backendAddressPool": {
+                                "id": "[parameters('loadBalancers_master.lb_id_1')]"
+                            },
+                            "probe": {
+                                "id": "[parameters('loadBalancers_master.lb_id_2')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "rule-https-8443",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('loadBalancers_master.lb_id_3')]"
+                            },
+                            "frontendPort": 8443,
+                            "backendPort": 8443,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "loadDistribution": "Default",
+                            "backendAddressPool": {
+                                "id": "[parameters('loadBalancers_master.lb_id_4')]"
+                            },
+                            "probe": {
+                                "id": "[parameters('loadBalancers_master.lb_id_5')]"
+                            }
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "http-probe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 80,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ],
+                "inboundNatRules": [],
+                "outboundNatRules": [],
+                "inboundNatPools": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_master_lb_ip_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/networkInterfaces/master1728'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_master1728_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.0.5",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_master1_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_OCP_vnet_name')), '/subnets/default')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancers_master.lb_name')), '/backendAddressPools/master-backend-pool')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_master1_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_master1_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_OCP_vnet_name'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancers_master.lb_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_master1_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/networkInterfaces/workstation270'.",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('networkInterfaces_workstation270_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_workstation_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_OCP_vnet_name')), '/subnets/default')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_workstation_nsg_name'))]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_workstation_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_OCP_vnet_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_workstation_nsg_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/networkSecurityGroups/master1-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_master1_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "https-8443",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "8443",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1010,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "http-80",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1020,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "https-443",
+                        "properties": {
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1030,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/networkSecurityGroups/workstation-nsg'.",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_workstation_nsg_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/publicIPAddresses/master-lb-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_master_lb_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "ocp-demo-loadbalancer"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/publicIPAddresses/master1-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_master1_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "master1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/publicIPAddresses/workstation-ip'.",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_workstation_ip_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "workstation"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/OCP/providers/Microsoft.Network/virtualNetworks/OCP-vnet'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_OCP_vnet_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "northeurope",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/24"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/a01a40b4-19b9-4efa-b68a-f89063ad0413/resourceGroups/ocp/providers/Microsoft.Storage/storageAccounts/ocpdisks641'.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_ocpdisks641_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "northeurope",
+            "tags": {},
+            "properties": {},
+            "dependsOn": []
+        }
+    ]
+}
