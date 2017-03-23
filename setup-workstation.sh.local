@@ -38,4 +38,7 @@ sed -i -e "s/dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net/$domain_name/g"
 
 sudo cp ansible-host-file/hosts /etc/ansible/
 
+<<<<<<< HEAD
+=======
 #ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml -f 10
+>>>>>>> 5f7e449b987d4e885f34218dcc758c355f6e1a84
