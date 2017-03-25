@@ -12,7 +12,7 @@ spec:
            def mvnCmd = "mvn -s configuration/settings.xml"
 
            stage 'Build'
-           git url: 'https://github.com/jacobborella/openshift-tasks.git'
+           git url: 'https://github.com/jacobborella/kitchensink-example.git'
            sh "pwd"
            sh "${mvnCmd} clean install -DskipTests=true"
            def v = version()
@@ -32,7 +32,7 @@ spec:
 
            stage 'Push to Nexus'
            sh "${mvnCmd} deploy -DskipTests=true"
-
+/*
            stage 'Deploy TEST'
            sh "rm -rf oc-build && mkdir -p oc-build/deployments"
            sh "cp target/openshift-tasks.war oc-build/deployments/ROOT.war"
@@ -56,7 +56,7 @@ spec:
            sh "oc delete bc,dc,svc,route,is -l app=tasks -n prod"
            // deploy prod image
            sh "oc new-app tasks:${v} -n prod"
-           sh "oc expose svc/tasks -n prod"
+           sh "oc expose svc/tasks -n prod"*/
         }
         def version() {
           def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
