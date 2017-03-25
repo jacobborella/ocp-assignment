@@ -38,28 +38,28 @@ spec:
            sh "cp target/openshift-tasks.war oc-build/deployments/ROOT.war"
            // clean up. keep the image stream
            sh "oc project test"
-           sh "oc delete bc,dc,svc,route -l app=kitchensink -n test"
+           sh "oc delete bc,dc,svc,route,secret -l app=kitchensink -n test"
            // create build. override the exit code since it complains about exising imagestream
            sh "oc new-build --name=kitchensink --image-stream=jboss-eap70-openshift --binary=true --labels=app=kitchensink -n test || true"
            // build image
            sh "oc start-build kitchensink --from-dir=oc-build --wait=true -n test"
            // deploy image
-           sh "oc new-app kitchensink:latest -n test"
+           sh "oc new-app --template=postgresql-ephemeral -p POSTGRESQL_USER=devuser -p POSTGRESQL_PASSWORD=devpass -p POSTGRESQL_DATABASE=devdb --labels=app=kitchensink -n test"
+          sh "oc new-app kitchensink:latest -n test"
            sh "oc expose svc/kitchensink -n test"
 
            stage 'Deploy PROD'
            input message: "Promote to PROD?", ok: "Promote"
            sh "oc project prod"
            // tag for prod
-           sh "oc tag test/tasks:latest prod/tasks:${v}"
+           sh "oc tag test/kitchensink:latest prod/kitchensink:${v}"
            // clean up. keep the imagestream
-           sh "oc delete bc,dc,svc,route,is -l app=tasks -n prod"
+           sh "oc delete bc,dc,svc,route -l app=kitchensink -n prod"
            // deploy prod image
-           sh "oc new-app tasks:${v} -n prod"
-           sh "oc expose svc/tasks -n prod"
+           sh "oc new-app kitchensink:${v} -n prod"
+           sh "oc expose svc/kitchensink -n prod"
         }
         def version() {
           def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
           matcher ? matcher[0][1] : null
         }
-
