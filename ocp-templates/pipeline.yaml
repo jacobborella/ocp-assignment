@@ -32,20 +32,20 @@ spec:
 
            stage 'Push to Nexus'
            sh "${mvnCmd} deploy -DskipTests=true"
-/*
+
            stage 'Deploy TEST'
            sh "rm -rf oc-build && mkdir -p oc-build/deployments"
            sh "cp target/openshift-tasks.war oc-build/deployments/ROOT.war"
            // clean up. keep the image stream
            sh "oc project test"
-           sh "oc delete bc,dc,svc,route,is -l app=tasks -n test"
+           sh "oc delete bc,dc,svc,route -l app=tasks -n test"
            // create build. override the exit code since it complains about exising imagestream
-           sh "oc new-build --name=tasks --image-stream=jboss-eap70-openshift --binary=true --labels=app=tasks -n test || true"
+           sh "oc new-build --name=kitchensink --image-stream=jboss-eap70-openshift --binary=true --labels=app=kitchensink -n test || true"
            // build image
-           sh "oc start-build tasks --from-dir=oc-build --wait=true -n test"
+           sh "oc start-build kitchensink --from-dir=oc-build --wait=true -n test"
            // deploy image
-           sh "oc new-app tasks:latest -n test"
-           sh "oc expose svc/tasks -n test"
+           sh "oc new-app kitchensink:latest -n test"
+           sh "oc expose svc/kitchensink -n test"
 
            stage 'Deploy PROD'
            input message: "Promote to PROD?", ok: "Promote"
@@ -56,7 +56,7 @@ spec:
            sh "oc delete bc,dc,svc,route,is -l app=tasks -n prod"
            // deploy prod image
            sh "oc new-app tasks:${v} -n prod"
-           sh "oc expose svc/tasks -n prod"*/
+           sh "oc expose svc/tasks -n prod"
         }
         def version() {
           def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
