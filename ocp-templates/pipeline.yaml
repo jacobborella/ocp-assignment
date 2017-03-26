@@ -8,58 +8,71 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
         node('maven') {
-           // define commands
-           def mvnCmd = "mvn -s configuration/settings.xml"
+          // define commands
+          def mvnCmd = "mvn -s configuration/settings.xml"
 
-           stage 'Build'
-           git url: 'https://github.com/jacobborella/openshift-tasks.git'
-           sh "pwd"
-           sh "${mvnCmd} clean install -DskipTests=true"
-           def v = version()
+          stage 'Build'
+          git url: 'https://github.com/jacobborella/kitchensink-example.git'
+          sh "pwd"
+          sh "${mvnCmd} clean install -DskipTests=true"
+          def v = version()
 
-           stage 'Test and Analysis'
-           parallel (
-               'Test': {
-                   sh "${mvnCmd} test"
-                   step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-               },
-               'Static Analysis': {
-                   sh "${mvnCmd} jacoco:report sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -DskipTests=true"
-                   sh "curl -o sonar-test-result.xml http://sonarqube:9000/api/resources?metrics=qi-quality-index,coverage,test_success_density&resource=1"
-                   archiveArtifacts 'sonar-test-result.xml'
-               }
-           )
+          stage 'Test and Analysis'
+          parallel (
+            'Test': {
+              sh "${mvnCmd} test"
+              step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+            },
+              'Static Analysis': {
+              sh "${mvnCmd} jacoco:report sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -DskipTests=true"
+              sh "curl -o sonar-test-result.xml http://sonarqube:9000/api/resources?metrics=qi-quality-index,coverage,test_success_density&resource=1"
+              archiveArtifacts 'sonar-test-result.xml'
+            }
+          )
 
-           stage 'Push to Nexus'
-           sh "${mvnCmd} deploy -DskipTests=true"
+          stage 'Push to Nexus'
+          sh "${mvnCmd} deploy -DskipTests=true"
 
-           stage 'Deploy TEST'
-           sh "rm -rf oc-build && mkdir -p oc-build/deployments"
-           sh "cp target/openshift-tasks.war oc-build/deployments/ROOT.war"
-           // clean up. keep the image stream
-           sh "oc project test"
-           sh "oc delete bc,dc,svc,route,is -l app=tasks -n test"
-           // create build. override the exit code since it complains about exising imagestream
-           sh "oc new-build --name=tasks --image-stream=jboss-eap70-openshift --binary=true --labels=app=tasks -n test || true"
-           // build image
-           sh "oc start-build tasks --from-dir=oc-build --wait=true -n test"
-           // deploy image
-           sh "oc new-app tasks:latest -n test"
-           sh "oc expose svc/tasks -n test"
+          stage 'Deploy DEV'
+          sh "rm -rf oc-build && mkdir -p oc-build/deployments"
+          sh "cp target/openshift-kitchensink.war oc-build/deployments/ROOT.war"
+          // clean up. keep the image stream
+          sh "oc project dev"
+          sh "oc delete bc,dc,svc,route,secret --all -n dev"
+          // create build. override the exit code since it complains about exising imagestream
+          sh "oc new-build --name=kitchensink --image-stream=jboss-eap70-openshift --binary=true --labels=app=kitchensink -n dev || true"
+          // build image
+          sh "oc start-build kitchensink --from-dir=oc-build --wait=true -n dev"
+          // deploy image
+          sh "oc new-app --template=postgresql-ephemeral -p POSTGRESQL_USER=devuser -p POSTGRESQL_PASSWORD=devpass -p POSTGRESQL_DATABASE=devdb -n dev"
+          sh "oc new-app kitchensink:latest -e OPENSHIFT_POSTGRESQL_DB_HOST=postgresql -e OPENSHIFT_POSTGRESQL_DB_PORT=5432 -e OPENSHIFT_POSTGRESQL_DB_USERNAME=devuser -e OPENSHIFT_POSTGRESQL_DB_PASSWORD=devpass -e OPENSHIFT_APP_NAME=devdb -n dev"
+          sh "oc expose svc/kitchensink -n dev"
 
-           stage 'Deploy PROD'
-           input message: "Promote to PROD?", ok: "Promote"
-           sh "oc project prod"
-           // tag for prod
-           sh "oc tag test/tasks:latest prod/tasks:${v}"
-           // clean up. keep the imagestream
-           sh "oc delete bc,dc,svc,route,is -l app=tasks -n prod"
-           // deploy prod image
-           sh "oc new-app tasks:${v} -n prod"
-           sh "oc expose svc/tasks -n prod"
+          stage 'Deploy TEST'
+          sh "oc project test"
+          sh "${mvnCmd} test -P int-tests"
+          // tag for test
+          sh "oc tag dev/kitchensink:latest test/kitchensink:${v}"
+          // clean up. keep the imagestream
+          sh "oc delete bc,dc,svc,route,secret --all -n test"
+          // deploy test image
+          sh "oc new-app --template=postgresql-ephemeral -p POSTGRESQL_USER=devuser -p POSTGRESQL_PASSWORD=devpass -p POSTGRESQL_DATABASE=devdb -n test"
+          sh "oc new-app kitchensink:${v} -n test"
+          sh "oc expose svc/kitchensink -n test"
+
+          stage 'Deploy PROD'
+          input message: "Promote to PROD?", ok: "Promote"
+          sh "oc project prod"
+          // tag for prod
+          sh "oc tag dev/kitchensink:latest prod/kitchensink:${v}"
+          // clean up. keep the imagestream
+          sh "oc delete bc,dc,svc,route,secret --all -n prod"
+          // deploy prod image
+          sh "oc new-app --template=postgresql-ephemeral -p POSTGRESQL_USER=devuser -p POSTGRESQL_PASSWORD=devpass -p POSTGRESQL_DATABASE=devdb -n prod"
+          sh "oc new-app kitchensink:${v} -n prod"
+          sh "oc expose svc/kitchensink -n prod"
         }
         def version() {
           def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
           matcher ? matcher[0][1] : null
         }
-
