@@ -193,7 +193,7 @@
   become: yes
   become_method: sudo
   tasks:
-  - name: Setup htpsswd file
+  - name: Setup htpasswd file
     template:
-      src: templates/htpsswd
-      dest: /etc/origin/master/htpasswd
+      src: templates/htpasswd
+      dest: /etc/ocp-installer/htpasswd

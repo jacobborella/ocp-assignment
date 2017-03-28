@@ -34,6 +34,11 @@ ssh-copy-id -o StrictHostKeyChecking=no app1
 ssh app1 "echo 'aMc5re1weaPkg'|sudo -S sed -i -e '$ a\jborella\tALL=(ALL)\tNOPASSWD: ALL' /etc/sudoers"
 ssh -o StrictHostKeyChecking=no app1.$domain_name "whoami"
 
+ssh-copy-id -o StrictHostKeyChecking=no app2
+ssh app2 "echo 'aMc5re1weaPkg'|sudo -S sed -i -e '$ a\jborella\tALL=(ALL)\tNOPASSWD: ALL' /etc/sudoers"
+ssh -o StrictHostKeyChecking=no app2.$domain_name "whoami"
+
+
 sed -i -e "s/dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net/$domain_name/g" ansible-host-file/hosts
 
 sudo cp ansible-host-file/hosts /etc/ansible/
