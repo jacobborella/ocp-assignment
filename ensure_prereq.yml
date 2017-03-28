@@ -187,3 +187,13 @@
       name: nfs
       state: started
       enabled: true
+- hosts: masters
+  remote_user: jborella
+  become_user: root
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Setup htpsswd file
+    template:
+      src: templates/htpsswd
+      dest: /etc/origin/master/htpasswd

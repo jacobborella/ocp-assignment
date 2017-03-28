@@ -15,7 +15,8 @@ openshift_master_cluster_method=native
 openshift_master_cluster_hostname=ocp-master.northeurope.cloudapp.azure.com
 openshift_master_cluster_public_hostname=ocp-master.northeurope.cloudapp.azure.com
 
-openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvider'}]
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+#openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvider'}]
 
 # If ansible_ssh_user is not root, ansible_become must be set to true
 ansible_become=true
