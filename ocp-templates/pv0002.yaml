@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  nfs:
+    path: /nfsshare/pv0002
+    server: master1.mwkt4ew5avjurnn0jslzls20ac.fx.internal.cloudapp.net
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: pv0002
+    namespace: my-proj
+
