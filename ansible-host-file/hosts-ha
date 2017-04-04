@@ -52,7 +52,7 @@ openshift_hosted_metrics_storage_host=master1
 openshift_hosted_metrics_storage_nfs_directory=/exports
 openshift_hosted_metrics_storage_volume_name=metrics
 openshift_hosted_metrics_storage_volume_size=10Gi
-#openshift_hosted_metrics_public_url=https://metrics.collectalot.org/hawkular/metrics
+openshift_hosted_metrics_public_url=https://metrics.collectalot.org/hawkular/metrics
 
 # Setup logging
 openshift_hosted_logging_deploy=true
@@ -62,7 +62,7 @@ openshift_hosted_logging_storage_host=master1
 openshift_hosted_logging_storage_nfs_directory=/exports
 openshift_hosted_logging_storage_volume_name=logging
 openshift_hosted_logging_storage_volume_size=10Gi
-#openshift_master_logging_public_url=https://kibana.collectalot.org
+openshift_master_logging_public_url=https://kibana.collectalot.org
 
 # host group for masters
 [masters]
