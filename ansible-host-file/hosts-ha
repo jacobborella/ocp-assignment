@@ -66,23 +66,23 @@ openshift_hosted_logging_storage_volume_size=10Gi
 
 # host group for masters
 [masters]
-master1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
-master2.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
-master3.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+master2.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+master3.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
 
 [etcd]
-master1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
-master2.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
-master3.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+master2.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
+master3.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
 
 [nfs]
-master1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net
 
 [nodes]
-master1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
-master2.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
-master3.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
-infra1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
-infra2.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
-app1.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'nodes', 'zone': 'default'}"
-app2.bwf5g2530ppevgw1bujq3d5nod.fx.internal.cloudapp.net openshift_node_labels="{'region': 'nodes', 'zone': 'default'}"
+master1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
+master2.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
+master3.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'master', 'zone': 'default'}" openshift_schedulable=false
+infra1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+infra2.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+app1.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'nodes', 'zone': 'default'}"
+app2.dud11glxmi2edm0cgnwmaovwqf.fx.internal.cloudapp.net openshift_node_labels="{'region': 'nodes', 'zone': 'default'}"
