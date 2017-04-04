@@ -278,7 +278,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_app1_name'),'-20170306-214431.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
@@ -342,7 +342,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_infra1_name'),'-20170306-214517.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
@@ -406,7 +406,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_infra2_name'),'-20170306-214545.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
@@ -470,7 +470,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_master1_name'),'-20170306-214615.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
@@ -534,7 +534,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_master2_name'),'-20170306-214651.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
@@ -598,7 +598,7 @@
                                 "uri": "[concat('https', '://', parameters('storageAccounts_ocpvmdisks_name'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_master3_name'),'-20170306-214723.vhd'))]"
                             },
                             "caching": "ReadOnly",
-                            "diskSizeGB": 1023
+                            "diskSizeGB": 60
                         }
                     ]
                 },
