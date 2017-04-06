@@ -10,8 +10,7 @@ ansible_ssh_user=jborella
 openshift_use_dnsmasq=false
 
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/ocp-installer/htpasswd'}]
-#openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvi
-der'}]
+#openshift_master_identity_providers=[{'name': 'allow_all_auth', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvider'}]
 
 # If ansible_ssh_user is not root, ansible_become must be set to true
 ansible_become=true
