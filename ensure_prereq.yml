@@ -68,7 +68,7 @@
       state: touch
     when: yum_wr_disabled.rc is defined and yum_wr_disabled.rc == 0
   - name: Enable relevant repos
-    command: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.4-rpms"
+    command: subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.5-rpms" --enable="rhel-7-fast-datapath-rpms"
     when: not repo_enabled.stat.exists
     register: repo_wr_enabled
   - name: mark repo enablement as done
