@@ -6,7 +6,7 @@ sudo subscription-manager register --username $sub_man --password $sub_man_pswd
 sudo subscription-manager attach --pool=$pool_id
 sudo subscription-manager repos --disable="*"
 sudo yum-config-manager --disable \*
-sudo subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.4-rpms"
+sudo subscription-manager repos --enable="rhel-7-server-rpms" --enable="rhel-7-server-extras-rpms" --enable="rhel-7-server-ose-3.5-rpms"
 sudo yum install -y atomic-openshift-utils
 sudo sed -i -e "s/^# control_path = %(directory)s\/%%h-%%r/control_path = %(directory)s\/%%h-%%r/" /etc/ansible/ansible.cfg
 ssh-copy-id -o StrictHostKeyChecking=no master1
